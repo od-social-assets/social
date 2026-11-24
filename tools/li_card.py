@@ -1,6 +1,6 @@
 """LinkedIn visuals for Greg Bennett's personal posts.
 
-Usage:
+Usage (set LI_THEME=dark or LI_THEME=light; default dark):
   python3 tools/li_card.py card OUT.png "Main line one|Main line two" "Subline"
   python3 tools/li_card.py carousel OUT.pdf "Slide 1 title|line" "Slide 2|line" ...
 
@@ -12,7 +12,14 @@ the headline, the rest is body text.
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-BG, FG, SUB, MUTED, ACCENT = "#111110", "#F2F0EA", "#C9C6BD", "#9A978F", "#E8B04A"
+import os
+THEMES = {
+    # dark: near-black background, warm white text, gold accent
+    "dark": ("#111110", "#F2F0EA", "#C9C6BD", "#9A978F", "#E8B04A"),
+    # light: off-white background, near-black text, high-contrast orange accent
+    "light": ("#FAF8F3", "#111110", "#3A3936", "#6B6964", "#D9480F"),
+}
+BG, FG, SUB, MUTED, ACCENT = THEMES[os.environ.get("LI_THEME", "dark")]
 BOLD = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
 REG = "/usr/share/fonts/opentype/inter/Inter-Regular.otf"
 FOOTER = "Greg Bennett  ·  SEO & GEO, tested in public"
@@ -51,11 +58,11 @@ def page(w, h, head, body=None, counter=None):
     img = Image.new("RGB", (w, h), BG)
     d = ImageDraw.Draw(img)
     width = w - 2 * MARGIN
-    hf, hl = fit(d, head, BOLD, 76, width, 5)
+    hf, hl = fit(d, head, BOLD, 84, width, 5)
     lh = int(hf.size * 1.28)
     blines, bf = [], None
     if body:
-        bf, blines = fit(d, body, REG, 46, width, 8)
+        bf, blines = fit(d, body, REG, 48, width, 7)
     total = len(hl) * lh + (80 + len(blines) * int(bf.size * 1.4) if body else 0)
     y = max(MARGIN + 40, (h - total) // 2 - 40)
     for line in hl:
