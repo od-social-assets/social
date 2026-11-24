@@ -103,7 +103,7 @@ def header(img, y=100, counter=None, W=1080):
     fm = F(24, 'ExtraBold'); mono = "GB"
     tracked(d, ((M + r) * SS - tw(d, mono, fm, -0.02) / 2, (y + r - 15) * SS), mono, fm, T['mono_fg'], -0.02)
     tracked(d, ((M + 2 * r + 18) * SS, (y + 4) * SS), "Greg Bennett", F(30, 'SemiBold'), T['text'], -0.01)
-    tracked(d, ((M + 2 * r + 18) * SS, (y + 38) * SS), "SEO & GEO, tested in public", F(22, 'Regular'), T['muted'], 0)
+    tracked(d, ((M + 2 * r + 18) * SS, (y + 38) * SS), "COO at OneDirectory  ·  SEO & GEO", F(22, 'Regular'), T['muted'], 0)
     if counter:
         fc = F(30, 'Medium')
         tracked(d, ((W - M) * SS - tw(d, counter, fc, 0), (y + 16) * SS), counter, fc, T['muted'], 0)
