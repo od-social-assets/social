@@ -193,6 +193,50 @@ def seasonal(name, l1, l2):
 if __name__ == '__main__':
     os.makedirs('out2', exist_ok=True)
     stats(); carousel(); minimap()
-    seasonal('festive-season', 'Happy holidays', 'Wishing you a restful break and a great start to 2027.')
-    seasonal('new-year', 'Happy New Year', "Here's to 2027.")
+    pass  # seasonal('festive-season', 'Happy holidays', 'Wishing you a restful break and a great start to 2027.')
+    pass  # seasonal('new-year', 'Happy New Year', "Here's to 2027.")
     print('done')
+
+import random
+def confetti(img, seed, area, n=46):
+    rnd = random.Random(seed); d = ImageDraw.Draw(img)
+    cols = [GREEN, BLUE, (150, 228, 180), (170, 205, 255), (30, 34, 45)]
+    x0, y0, x1, y1 = area
+    for _ in range(n):
+        x = rnd.uniform(x0, x1); y = rnd.uniform(y0, y1); s = rnd.choice([10, 14, 18, 24])
+        c = rnd.choices(cols, weights=[4, 3, 3, 3, 1])[0]
+        if rnd.random() < 0.6:
+            d.rounded_rectangle((x * SS, y * SS, (x + s * 1.6) * SS, (y + s) * SS), radius=int(s * SS / 4), fill=c)
+        else:
+            d.ellipse((x * SS, y * SS, (x + s * 0.7) * SS, (y + s * 0.7) * SS), fill=c)
+
+def festive_v2():
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    confetti(img, 7, (80, 70, 1100, 300), 26); confetti(img, 9, (60, 900, 300, 1120), 8); confetti(img, 11, (900, 900, 1120, 1120), 8)
+    d = ImageDraw.Draw(img)
+    f1 = F(140, 'ExtraBold'); t = "Happy holidays"; w = tw(d, t, f1, -0.035)
+    tracked(d, ((W * SS - w) / 2, 420 * SS), t, f1, NAVY, -0.035)
+    bar(d, (W - 120) / 2, 610)
+    f2 = F(46, 'Regular')
+    for k, ln in enumerate(["From all of us at OneDirectory.", "See you in 2027."]):
+        w2 = tw(d, ln, f2, -0.005); tracked(d, ((W * SS - w2) / 2, (660 + k * 64) * SS), ln, f2, SUB, -0.005)
+    logo(img, (W - 300) / 2, 1040 - 40, 300)
+    finish(img, 'out2/festive-season.png')
+
+def newyear_v2():
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    confetti(img, 21, (80, 60, 1100, 240), 24); confetti(img, 23, (60, 930, 300, 1120), 8); confetti(img, 25, (900, 930, 1120, 1120), 8)
+    d = ImageDraw.Draw(img)
+    f0 = F(44, 'SemiBold'); t0 = "Happy New Year"; w0 = tw(d, t0, f0, -0.01)
+    tracked(d, ((W * SS - w0) / 2, 300 * SS), t0, f0, (6, 150, 55), -0.01)
+    f1 = F(330, 'ExtraBold'); t = "2027"; w = tw(d, t, f1, -0.045)
+    tracked(d, ((W * SS - w) / 2, 360 * SS), t, f1, NAVY, -0.045)
+    bar(d, (W - 120) / 2, 760)
+    f2 = F(44, 'Regular'); t2 = "From all of us at OneDirectory."; w2 = tw(d, t2, f2, -0.005)
+    tracked(d, ((W * SS - w2) / 2, 810 * SS), t2, f2, SUB, -0.005)
+    logo(img, (W - 300) / 2, 1000, 300)
+    finish(img, 'out2/new-year.png')
+
+festive_v2(); newyear_v2()
