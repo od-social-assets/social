@@ -1,0 +1,7 @@
+{"kind":"carousel","slides":[
+ {"type":"cover","head":"Your robots.txt might be hiding you from ChatGPT","sub":"OpenAI runs two crawlers. They do different jobs.","swipe":"Swipe to check yours"},
+ {"type":"point","head":"GPTBot is for training","body":"It collects content OpenAI may use to train its models."},
+ {"type":"point","head":"OAI-SearchBot is for search","body":"ChatGPT search uses it to find, show and cite websites."},
+ {"type":"point","head":"Block the wrong one and you vanish","body":"OpenAI says sites that block OAI-SearchBot won't be shown in ChatGPT search answers."},
+ {"type":"point","head":"Check yours in 30 seconds","body":"Open yoursite.com/robots.txt and look for both names."},
+ {"type":"end","head":"Blocking training is a choice. Blocking search is a cost.","body":"When did you last actually open your robots.txt?"}]}
