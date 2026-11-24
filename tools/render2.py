@@ -240,3 +240,39 @@ def newyear_v2():
     finish(img, 'out2/new-year.png')
 
 festive_v2(); newyear_v2()
+
+def frame_shot(img, shot, box, radius=20):
+    """Paste a product screenshot as a rounded, shadowed window."""
+    x0, y0, x1, y1 = box
+    w, h = x1 - x0, y1 - y0
+    sh = shot.resize((w * SS, h * SS), Image.LANCZOS)
+    card(img, box, radius)
+    mask = Image.new('L', sh.size, 0); ImageDraw.Draw(mask).rounded_rectangle((0, 0, sh.width, sh.height), radius=radius * SS, fill=255)
+    img.paste(sh, (x0 * SS, y0 * SS), mask)
+    ImageDraw.Draw(img).rounded_rectangle((x0 * SS, y0 * SS, x1 * SS, y1 * SS), radius=radius * SS, outline=(214, 222, 232), width=2 * SS)
+
+def minimap_v2():
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 92, 300)
+    pill(d, M, 200, "New in OneDirectory", 28, bg=GREEN, fg=NAVY)
+    y = para(d, M * SS, 300 * SS, "Org chart mini map", F(100, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.1)
+    para(d, M * SS, y + 14 * SS, "See the whole chart, and jump anywhere in one click.", F(42, 'Regular'), SUB, (W - 2 * M) * SS, 1.3, -0.005)
+    full = Image.open('shots/orgchart-minimap.jpg').convert('RGB')
+    shot = full.crop((64, 62, 1481, 757))
+    sw = W - 2 * M; sh_h = int(shot.height * sw / shot.width)
+    top = 560
+    frame_shot(img, shot, (M, top, M + sw, top + sh_h))
+    # zoomed callout of the mini map
+    mm = full.crop((1268, 612, 1467, 743))
+    cw = 340; chh = int(mm.height * cw / mm.width)
+    cx1 = W - M + 30; cy1 = top + sh_h + 70
+    box = (cx1 - cw, cy1 - chh, cx1, cy1)
+    frame_shot(img, mm, box, 16)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((box[0] * SS, box[1] * SS, box[2] * SS, box[3] * SS), radius=16 * SS, outline=GREEN, width=5 * SS)
+    tracked(d, (M * SS, (top + sh_h + 40) * SS), "Drag or click the map to move.", F(32, 'Medium'), NAVY, -0.005)
+    tracked(d, (M * SS, (top + sh_h + 86) * SS), "Available now for everyone in your directory.", F(28, 'Regular'), MUTED, 0)
+    finish(img, 'out2/org-chart-mini-map.png')
+
+minimap_v2()
