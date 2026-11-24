@@ -45,7 +45,7 @@ def text(xy, s, font, fill=INK, angle=0):
 ox, oy, top, right = 190, 1000, 150, 1100
 line([(ox, oy + 10), (ox, top)], w=7); arrowhead((ox, top), (ox, top + 50), INK, 7, 30)
 line([(ox - 10, oy), (right, oy)], w=7); arrowhead((right, oy), (right - 50, oy), INK, 7, 30)
-text((118, (oy + top) / 2), "“BEST X TOOLS” LISTS", F(MARK, 44), angle=90)
+text((118, (oy + top) / 2), "“BEST X SOFTWARE” LISTS", F(MARK, 44), angle=90)
 text(((ox + right) / 2, 1062), "TIME", F(MARK, 48))
 
 # data: boring flat years, then straight up
@@ -56,14 +56,15 @@ pts += [(778, 915), (792, 860), (800, 700), (806, 480), (812, 300), (820, 250)]
 line(pts, w=10, amp=1.0)
 
 # annotation: the trigger
-text((520, 700), "AI SEARCH STARTS", F(CAV, 66), BLUE, 5)
-text((535, 760), "CITING THEM", F(CAV, 66), BLUE, 5)
-line([(640, 805), (705, 850), (772, 880)], BLUE, 5)
+text((480, 610), "AI STARTS", F(CAV, 62), BLUE, 4)
+text((485, 672), "PICKING WINNERS", F(CAV, 62), BLUE, 4)
+text((490, 734), "FROM THESE LISTS", F(CAV, 62), BLUE, 4)
+line([(620, 790), (700, 845), (772, 880)], BLUE, 5)
 arrowhead((772, 880), (705, 850), BLUE)
 
 # annotation: the punchline
-text((985, 385), "every single one", F(CAV, 58), RED, -4)
-text((985, 445), "ranks itself #1", F(CAV, 58), RED, -4)
+text((1010, 385), "always written by", F(CAV, 58), RED, -4)
+text((1010, 445), "the #1 pick", F(CAV, 58), RED, -4)
 line([(890, 330), (860, 290), (838, 262)], RED, 5)
 arrowhead((838, 262), (860, 290), RED)
 
