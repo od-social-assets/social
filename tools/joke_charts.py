@@ -121,26 +121,29 @@ def copilot():
 
 def tiktok():
     s = Sketch(seed=8)
-    s.axes("TOTAL VIEWS", "VIDEOS POSTED", ysize=44)
-    s.text((205, 1035), "0", "mark", 32); s.text((960, 1035), "351", "mark", 32)
-    pts, x = [], 215
-    while x < 440:
-        pts.append((x, 950 + random.uniform(-5, 5))); x += 20
-    while x <= 960:
-        t = (x - 440) / 520
-        pts.append((x, 950 - 700 * (t ** 1.6) + random.uniform(-6, 6))); x += 18
-    s.line(pts, w=10, amp=1.0)
-    s.text((330, 860), "Greek myths:", size=52, fill=BLUE, angle=-3)
-    s.text((330, 912), "flopped", size=52, fill=BLUE, angle=-3)
-    s.text((470, 560), "\u201cTHE REAL VERSION", "mark", 40, RED, 3)
-    s.text((480, 615), "IS DARKER\u201d", "mark", 40, RED, 3)
-    s.arrow([(520, 670), (500, 800), (452, 930)], RED)
-    s.text((900, 160), "5M+ views", "mark", 50)
-    s.text((900, 215), "66.1K followers", size=46)
-    s.arrow([(930, 240), (945, 260), (955, 280)], INK, 4)
-    s.text((1040, 1150), "(not to scale. obviously.)", size=34, fill=(120, 120, 130))
+    s.axes("DAILY VIEWS", "TIME", ysize=44)
+    fyp, srch, x = [], [], 215
+    while x <= 1060:
+        if x < 300:   y = 950 - (x - 215) * 0.4
+        elif x < 560: y = 916 - 620 * ((x - 300) / 260) ** 1.4
+        elif x < 690: y = 296 + random.uniform(-45, 45)
+        elif x < 760: y = 296 + 640 * ((x - 690) / 70) ** 0.8
+        else:         y = 945
+        fyp.append((x, min(950, y + random.uniform(-6, 6))))
+        srch.append((x, 905 + random.uniform(-6, 6) - (8 if x > 760 else 0)))
+        x += 14
+    s.line(fyp, w=10, amp=1.0)
+    s.line(srch, fill=BLUE, w=8, amp=1.0)
+    s.text((530, 195), "ALGORITHM: \u201cWE LOVE YOU\u201d", "mark", 38, RED, -2)
+    s.arrow([(600, 225), (615, 245), (622, 268)], RED, 4)
+    s.text((900, 360), "I STOP", "mark", 38, INK, -3)
+    s.text((900, 405), "POSTING", "mark", 38, INK, -3)
+    s.arrow([(820, 370), (760, 345), (708, 320)], INK, 4)
+    s.text((925, 710), "ALGORITHM:", "mark", 34, RED, -3)
+    s.text((925, 760), "\u201cwho?\u201d", size=58, fill=RED, angle=-3)
+    s.text((925, 840), "search: \u201cstill here.\u201d", size=46, fill=BLUE, angle=-2)
+    s.text((700, 1150), "(98.9% of today\u2019s views come from search)", size=38, fill=BLUE)
     s.save(out("tiktok", "tiktok-joke-chart.png"))
-
 
 ALL = {"listicles": listicles, "coin_flip": coin_flip, "impressions": impressions,
        "detector": detector, "copilot": copilot, "tiktok": tiktok}
