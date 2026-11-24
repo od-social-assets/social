@@ -119,8 +119,31 @@ def copilot():
     s.save(out("2027-01-11", "copilot-joke-chart.png"))
 
 
+def tiktok():
+    s = Sketch(seed=8)
+    s.axes("TOTAL VIEWS", "VIDEOS POSTED", ysize=44)
+    s.text((205, 1035), "0", "mark", 32); s.text((960, 1035), "351", "mark", 32)
+    pts, x = [], 215
+    while x < 440:
+        pts.append((x, 950 + random.uniform(-5, 5))); x += 20
+    while x <= 960:
+        t = (x - 440) / 520
+        pts.append((x, 950 - 700 * (t ** 1.6) + random.uniform(-6, 6))); x += 18
+    s.line(pts, w=10, amp=1.0)
+    s.text((330, 860), "Greek myths:", size=52, fill=BLUE, angle=-3)
+    s.text((330, 912), "flopped", size=52, fill=BLUE, angle=-3)
+    s.text((470, 560), "\u201cTHE REAL VERSION", "mark", 40, RED, 3)
+    s.text((480, 615), "IS DARKER\u201d", "mark", 40, RED, 3)
+    s.arrow([(520, 670), (500, 800), (452, 930)], RED)
+    s.text((900, 160), "5M+ views", "mark", 50)
+    s.text((900, 215), "66.1K followers", size=46)
+    s.arrow([(930, 240), (945, 260), (955, 280)], INK, 4)
+    s.text((1040, 1150), "(not to scale. obviously.)", size=34, fill=(120, 120, 130))
+    s.save(out("tiktok", "tiktok-joke-chart.png"))
+
+
 ALL = {"listicles": listicles, "coin_flip": coin_flip, "impressions": impressions,
-       "detector": detector, "copilot": copilot}
+       "detector": detector, "copilot": copilot, "tiktok": tiktok}
 
 if __name__ == "__main__":
     for n in (sys.argv[1:] or ALL):
