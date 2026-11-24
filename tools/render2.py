@@ -239,7 +239,7 @@ def newyear_v2():
     logo(img, (W - 300) / 2, 1000, 300)
     finish(img, 'out2/new-year.png')
 
-festive_v2(); newyear_v2()
+pass
 
 def frame_shot(img, shot, box, radius=20):
     """Paste a product screenshot as a rounded, shadowed window."""
@@ -275,4 +275,87 @@ def minimap_v2():
     tracked(d, (M * SS, (top + sh_h + 86) * SS), "Available now for everyone in your directory.", F(28, 'Regular'), MUTED, 0)
     finish(img, 'out2/org-chart-mini-map.png')
 
-minimap_v2()
+pass
+
+def shot_card(name, shotfile, pill_text, title, sub, crop, foot=None):
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 92, 300)
+    pill(d, M, 200, pill_text, 28, bg=GREEN, fg=NAVY)
+    y = para(d, M * SS, 300 * SS, title, F(92, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.1)
+    y = para(d, M * SS, y + 30 * SS, sub, F(40, 'Regular'), SUB, (W - 2 * M) * SS, 1.3, -0.005)
+    full = Image.open(shotfile).convert('RGB'); shot = full.crop(crop)
+    sw = W - 2 * M; sh_h = int(shot.height * sw / shot.width)
+    top = max(int(y / SS) + 50, 560)
+    if top + sh_h > H - 70:
+        sh_h = H - 70 - top
+        shot = shot.crop((0, 0, shot.width, int(sh_h * shot.width / sw)))
+    frame_shot(img, shot, (M, top, M + sw, top + sh_h))
+    finish(img, f'out2/{name}.png')
+
+def faq_card():
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 92, 300)
+    pill(d, M, 200, "FAQ", 28, bg=GREEN, fg=NAVY)
+    y = para(d, M * SS, 310 * SS, "How quickly can we start?", F(92, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.1)
+    card(img, (M, y / SS + 60, W - M, y / SS + 530), 24); d = ImageDraw.Draw(img)
+    yy = y / SS + 120
+    bar(d, M + 56, yy)
+    yy = para(d, (M + 56) * SS, (yy + 40) * SS, "Most customers have a working directory the same day the first sync finishes.", F(56, 'Bold'), NAVY, (W - 2 * M - 112) * SS, 1.2, -0.02)
+    para(d, (M + 56) * SS, yy + 30 * SS, "Profiles sync from Microsoft Entra ID every hour, with no manual imports.", F(36, 'Regular'), SUB, (W - 2 * M - 112) * SS, 1.35, -0.005)
+    tracked(d, (M * SS, (H - 96) * SS), "Try it free at onedirectory.com", F(30, 'Medium'), SUB, -0.005)
+    finish(img, 'out2/faq-how-quickly.png')
+
+def quote_card():
+    W = H = 1200
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 92, 300)
+    pill(d, M, 200, "Customer story", 28, bg=GREEN, fg=NAVY)
+    tracked(d, (M * SS, 250 * SS), "“", F(260, 'ExtraBold'), GREEN, 0)
+    y = para(d, M * SS, 470 * SS, "I couldn't find anything that beat the price and functionality of OneDirectory. I highly recommend the tool.", F(68, 'Bold'), NAVY, (W - 2 * M) * SS, 1.22, -0.02)
+    bar(d, M, y / SS + 40)
+    tracked(d, (M * SS, (y / SS + 80) * SS), "Chris Clinger", F(40, 'Bold'), NAVY, -0.01)
+    tracked(d, (M * SS, (y / SS + 132) * SS), "IT Enterprise Application Team Manager, Mountain View Hospital", F(30, 'Regular'), SUB, -0.005)
+    finish(img, 'out2/quote-mountain-view.png')
+
+def types_carousel():
+    W, H = 1080, 1350
+    slides = []
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 100, 300); bar(d, M, 300)
+    y = para(d, M * SS, 350 * SS, "4 kinds of org chart software, and the job each one does", F(104, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.1)
+    para(d, M * SS, y + 50 * SS, "From our analysis of 15,000+ reviews across G2, Capterra and TrustRadius.", F(42, 'Regular'), SUB, (W - 2 * M - 40) * SS, 1.35, -0.005)
+    pill(d, M, H - 230, "Swipe for all 4", 38)
+    slides.append(img)
+    ts = [("Live directory with org chart", "Everyone can look people up and see reporting lines, kept current from your people data.", "$3,500 to $12,000 a year at 250 employees"),
+          ("HRIS-connected chart", "Charts published from your HR system, for HR teams that need accurate, controlled org charts.", "$1,260 to $3,150 a year at 100 charted employees"),
+          ("Planning platform", "Scenario modeling for reorgs and headcount planning.", "$15,000+ a year at 250 employees"),
+          ("Chart builder", "One-off charts you draw and keep up to date by hand.", "Free to $600 a year")]
+    for i, (t, a, c) in enumerate(ts, 1):
+        img = canvas(W, H); d = ImageDraw.Draw(img)
+        logo(img, M, 100, 240)
+        cnt = f"{i} / 4"; fc = F(30, 'Medium'); tracked(d, ((W - M) * SS - tw(d, cnt, fc, 0), 106 * SS), cnt, fc, MUTED, 0)
+        tracked(d, (M * SS, 270 * SS), f"{i:02d}", F(190, 'ExtraBold'), GREEN, -0.04)
+        y = para(d, M * SS, 520 * SS, t, F(84, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.12)
+        bar(d, M, y / SS + 30)
+        y = para(d, M * SS, y + 90 * SS, a, F(46, 'Regular'), SUB, (W - 2 * M - 20) * SS, 1.42, -0.005)
+        card(img, (M, y / SS + 50, W - M, y / SS + 190), 18); d = ImageDraw.Draw(img)
+        tracked(d, ((M + 36) * SS, (y / SS + 72) * SS), "Typical cost", F(28, 'Medium'), MUTED, 0)
+        sz = 40
+        while tw(d, c, F(sz, 'Bold'), -0.015) > (W - 2 * M - 72) * SS: sz -= 1
+        tracked(d, ((M + 36) * SS, (y / SS + 112) * SS), c, F(sz, 'Bold'), NAVY, -0.015)
+        slides.append(img)
+    img = canvas(W, H); d = ImageDraw.Draw(img)
+    logo(img, M, 100, 300); bar(d, M, 380)
+    y = para(d, M * SS, 430 * SS, "Start with the job, then pick the tool.", F(92, 'ExtraBold'), NAVY, (W - 2 * M) * SS, 1.1)
+    para(d, M * SS, y + 50 * SS, "Pricing verified on vendor sites, Nov 9, 2026. Full guide in the comments.", F(42, 'Regular'), SUB, (W - 2 * M) * SS, 1.4, -0.005)
+    slides.append(img)
+    out = []
+    for n, s in enumerate(slides):
+        p = f'out2/types-{n:02d}.png'; finish(s, p); out.append(Image.open(p).convert('RGB'))
+    out[0].save('out2/org-chart-types-carousel.pdf', save_all=True, append_images=out[1:], resolution=150)
+
+shot_card('company-homepage', 'shots/home.jpg', 'Feature', 'A homepage for your whole company', 'New hires, birthdays, work anniversaries and pinned links in one place.', (0, 62, 1481, 757))
+shot_card('new-directory', 'shots/directory.jpg', 'New in OneDirectory', 'The new Directory', 'Browse everyone A to Z, phone-book style, without searching.', (64, 62, 1481, 757))
+faq_card(); quote_card(); types_carousel()
