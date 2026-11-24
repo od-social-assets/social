@@ -8,6 +8,8 @@ Usage:
 
 SPEC.json is either a quote card:
   {"kind": "card", "head": "Big line", "sub": "Optional smaller line"}
+or a seasonal greeting (1200x1200, centered, confetti):
+  {"kind": "seasonal", "kicker": "Optional small line above", "head": "Happy holidays", "sub": "Optional line below"}
 or a carousel (6 to 8 slides works best):
   {"kind": "carousel", "slides": [
      {"type": "cover", "head": "Hook headline", "sub": "Optional line", "swipe": "Swipe for the fix"},
@@ -127,6 +129,45 @@ def card(img, box, radius=18):
     ImageDraw.Draw(img).rounded_rectangle((x0, y0, x1, y1), radius=radius * SS, fill=T['card'], outline=T['card_edge'], width=2 * SS)
 
 
+import random
+def confetti(img, seed, area, n=40):
+    rnd = random.Random(seed); d = ImageDraw.Draw(img)
+    cols = [T['accent'], (38, 132, 255), (255, 196, 120), (170, 205, 255), T['text']]
+    x0, y0, x1, y1 = area
+    for _ in range(n):
+        x = rnd.uniform(x0, x1); y = rnd.uniform(y0, y1); s = rnd.choice([10, 14, 18, 24])
+        c = rnd.choices(cols, weights=[4, 3, 3, 3, 1])[0]
+        if rnd.random() < 0.6:
+            d.rounded_rectangle((x * SS, y * SS, (x + s * 1.6) * SS, (y + s) * SS), radius=int(s * SS / 4), fill=c)
+        else:
+            d.ellipse((x * SS, y * SS, (x + s * 0.7) * SS, (y + s * 0.7) * SS), fill=c)
+
+
+def seasonal(spec):
+    W = H = 1200
+    img = canvas(W, H)
+    confetti(img, 7, (80, 190, 1100, 300), 22); confetti(img, 9, (60, 930, 320, 1120), 9); confetti(img, 11, (880, 930, 1120, 1120), 9)
+    d = ImageDraw.Draw(img)
+    header(img, 92, W=W)
+    head = spec['head']
+    size = 140 if len(head) > 6 else 300
+    while tw(d, head, F(size, 'ExtraBold'), -0.035) > (W - 2 * M) * SS and size > 60:
+        size -= 6
+    y = 450 if size < 200 else 440
+    if spec.get('kicker'):
+        fk = F(46, 'SemiBold'); wk = tw(d, spec['kicker'], fk, -0.01)
+        tracked(d, ((W * SS - wk) / 2, (y - 80) * SS), spec['kicker'], fk, T['accent'], -0.01)
+    fh = F(size, 'ExtraBold'); wh = tw(d, head, fh, -0.035)
+    tracked(d, ((W * SS - wh) / 2, y * SS), head, fh, T['text'], -0.035)
+    yb = y + size * 1.2 + 20
+    bar(d, (W - 120) / 2, yb)
+    if spec.get('sub'):
+        fs = F(44, 'Regular'); yy = yb + 50
+        for ln in wrap(d, spec['sub'], fs, 860 * SS, -0.005):
+            w2 = tw(d, ln, fs, -0.005); tracked(d, ((W * SS - w2) / 2, yy * SS), ln, fs, T['sub'], -0.005); yy += 62
+    return finish(img)
+
+
 def finish(img):
     return img.resize((img.width // SS, img.height // SS), Image.LANCZOS)
 
@@ -197,6 +238,8 @@ def main():
     os.makedirs(os.path.dirname(out) or '.', exist_ok=True)
     if spec['kind'] == 'card':
         quote_card(spec).save(out + '.png', optimize=True)
+    elif spec['kind'] == 'seasonal':
+        seasonal(spec).save(out + '.png', optimize=True)
     else:
         s = carousel(spec)
         s[0].save(out + '-cover.png', optimize=True)
