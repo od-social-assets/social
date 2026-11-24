@@ -1,112 +1,70 @@
-"""Hand-drawn joke chart on graph paper: 'best X tools' listicles over time."""
+"""Hand-drawn joke chart, simple version: best-of listicles over time."""
 import math, random, sys
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 
-random.seed(7)
+random.seed(11)
 W = H = 1200
-S = 2  # supersample
-img = Image.new("RGB", (W * S, H * S), (250, 247, 238))
+S = 2
+img = Image.new("RGB", (W * S, H * S), (251, 249, 243))
 d = ImageDraw.Draw(img)
-
 MARK = "/home/claude/fonts/PermanentMarker.ttf"
 CAV = "/home/claude/fonts/Caveat.ttf"
-def F(path, size): return ImageFont.truetype(path, size * S)
+def F(p, s): return ImageFont.truetype(p, s * S)
 
-# graph paper
-for x in range(0, W * S, 30 * S):
-    d.line([(x, 0), (x, H * S)], fill=(214, 228, 240), width=1 * S)
-for y in range(0, H * S, 30 * S):
-    d.line([(0, y), (W * S, y)], fill=(214, 228, 240), width=1 * S)
-for x in range(0, W * S, 150 * S):
-    d.line([(x, 0), (x, H * S)], fill=(190, 210, 230), width=2 * S)
-for y in range(0, H * S, 150 * S):
-    d.line([(0, y), (W * S, y)], fill=(190, 210, 230), width=2 * S)
+# faint graph paper
+for i in range(0, W * S, 40 * S):
+    d.line([(i, 0), (i, H * S)], fill=(226, 234, 242), width=S)
+    d.line([(0, i), (W * S, i)], fill=(226, 234, 242), width=S)
 
-INK = (28, 28, 34)
-BLUE = (30, 70, 190)
-RED = (214, 64, 40)
+INK, BLUE, RED = (24, 24, 30), (28, 72, 196), (214, 58, 36)
 
-def wobble(pts, amp=2.0, step=6):
+def wob(pts, amp, step=6):
     out = []
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
         n = max(2, int(math.hypot(x1 - x0, y1 - y0) / step))
-        for i in range(n):
-            t = i / n
-            out.append((x0 + (x1 - x0) * t + random.uniform(-amp, amp),
-                        y0 + (y1 - y0) * t + random.uniform(-amp, amp)))
-    out.append(pts[-1])
-    return out
+        out += [(x0 + (x1 - x0) * i / n + random.uniform(-amp, amp),
+                 y0 + (y1 - y0) * i / n + random.uniform(-amp, amp)) for i in range(n)]
+    return out + [pts[-1]]
 
-def line(pts, fill=INK, w=6, amp=1.6):
-    p = [(x * S, y * S) for x, y in wobble(pts, amp)]
-    d.line(p, fill=fill, width=w * S, joint="curve")
+def line(pts, fill=INK, w=7, amp=1.4):
+    d.line([(x * S, y * S) for x, y in wob(pts, amp)], fill=fill, width=w * S, joint="curve")
 
-def text(xy, s, font, fill=INK, angle=0, anchor="la"):
-    if angle == 0:
-        d.text((xy[0] * S, xy[1] * S), s, font=font, fill=fill, anchor=anchor)
-        return
-    bbox = d.textbbox((0, 0), s, font=font)
-    tw, th = bbox[2] - bbox[0] + 40 * S, bbox[3] - bbox[1] + 40 * S
-    layer = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
-    ImageDraw.Draw(layer).text((20 * S, 20 * S - bbox[1]), s, font=font, fill=fill)
-    layer = layer.rotate(angle, expand=True, resample=Image.BICUBIC)
-    img.paste(layer, (int(xy[0] * S - layer.width / 2), int(xy[1] * S - layer.height / 2)), layer)
+def arrowhead(tip, frm, fill, w=5, size=26):
+    a = math.atan2(tip[1] - frm[1], tip[0] - frm[0])
+    for da in (2.6, -2.6):
+        line([tip, (tip[0] + size * math.cos(a + da), tip[1] + size * math.sin(a + da))], fill, w, 0.8)
 
-# title
-text((80, 70), "A BRIEF HISTORY OF", F(MARK, 34), fill=INK)
-text((80, 112), "“THE 9 BEST TOOLS FOR 2027”", F(MARK, 52), fill=INK)
+def text(xy, s, font, fill=INK, angle=0):
+    b = d.textbbox((0, 0), s, font=font)
+    lay = Image.new("RGBA", (b[2] - b[0] + 60 * S, b[3] - b[1] + 60 * S), (0, 0, 0, 0))
+    ImageDraw.Draw(lay).text((30 * S, 30 * S - b[1]), s, font=font, fill=fill)
+    lay = lay.rotate(angle, expand=True, resample=Image.BICUBIC)
+    img.paste(lay, (int(xy[0] * S - lay.width / 2), int(xy[1] * S - lay.height / 2)), lay)
 
 # axes
-ox, oy, top, right = 170, 1010, 260, 1110
-line([(ox, oy + 8), (ox, top)], w=6)
-line([(ox, top), (ox - 16, top + 26)], w=6)
-line([(ox, top), (ox + 16, top + 26)], w=6)
-line([(ox - 8, oy), (right, oy)], w=6)
-line([(right, oy), (right - 26, oy - 16)], w=6)
-line([(right, oy), (right - 26, oy + 16)], w=6)
-text((112, (oy + top) / 2), "HOW MANY EXIST", F(MARK, 34), angle=90)
-text(((ox + right) / 2, 1065), "TIME", F(MARK, 40), anchor="ma")
+ox, oy, top, right = 190, 1000, 150, 1100
+line([(ox, oy + 10), (ox, top)], w=7); arrowhead((ox, top), (ox, top + 50), INK, 7, 30)
+line([(ox - 10, oy), (right, oy)], w=7); arrowhead((right, oy), (right - 50, oy), INK, 7, 30)
+text((118, (oy + top) / 2), "“BEST X TOOLS” LISTS", F(MARK, 44), angle=90)
+text(((ox + right) / 2, 1062), "TIME", F(MARK, 48))
 
-# data: flat wobble, then a cliff straight up
-pts = []
-x = ox + 20
-while x < 720:
-    pts.append((x, 940 + 14 * math.sin(x / 37) + random.uniform(-8, 8)))
-    x += 18
-pts += [(735, 925), (752, 880), (762, 760), (770, 600), (778, 460), (790, 400)]
-line(pts, w=8, amp=1.2)
+# data: boring flat years, then straight up
+pts, x = [], ox + 25
+while x < 760:
+    pts.append((x, 930 + 12 * math.sin(x / 41) + random.uniform(-6, 6))); x += 20
+pts += [(778, 915), (792, 860), (800, 700), (806, 480), (812, 300), (820, 250)]
+line(pts, w=10, amp=1.0)
 
-# annotation 1: the spike
-text((515, 640), "AI SEARCH STARTS", F(CAV, 54), fill=BLUE, angle=6)
-text((515, 692), "CITING THEM", F(CAV, 54), fill=BLUE, angle=6)
-line([(640, 735), (700, 790), (748, 830)], fill=BLUE, w=4)
-line([(748, 830), (722, 826)], fill=BLUE, w=4)
-line([(748, 830), (742, 805)], fill=BLUE, w=4)
+# annotation: the trigger
+text((520, 700), "AI SEARCH STARTS", F(CAV, 66), BLUE, 5)
+text((535, 760), "CITING THEM", F(CAV, 66), BLUE, 5)
+line([(640, 805), (705, 850), (772, 880)], BLUE, 5)
+arrowhead((772, 880), (705, 850), BLUE)
 
-# annotation 2: the old era
-text((380, 800), "the guest post era", F(CAV, 44), fill=BLUE, angle=-3)
-line([(380, 830), (385, 880), (392, 905)], fill=BLUE, w=4)
-line([(392, 905), (378, 888)], fill=BLUE, w=4)
-line([(392, 905), (402, 886)], fill=BLUE, w=4)
+# annotation: the punchline
+text((985, 385), "every single one", F(CAV, 58), RED, -4)
+text((985, 445), "ranks itself #1", F(CAV, 58), RED, -4)
+line([(890, 330), (860, 290), (838, 262)], RED, 5)
+arrowhead((838, 262), (860, 290), RED)
 
-# sticky note
-note = Image.new("RGBA", (360 * S, 260 * S), (255, 226, 92, 255))
-nd = ImageDraw.Draw(note)
-nd.rectangle([0, 0, note.width, 34 * S], fill=(245, 208, 70, 255))
-nd.text((26 * S, 62 * S), "Fun fact:", font=F(CAV, 50), fill=INK)
-nd.text((26 * S, 118 * S), "every single one", font=F(CAV, 44), fill=INK)
-nd.text((26 * S, 168 * S), "ranks itself #1", font=F(CAV, 44), fill=RED)
-shadow = Image.new("RGBA", note.size, (0, 0, 0, 70)).filter(ImageFilter.GaussianBlur(8 * S))
-note = note.rotate(-5, expand=True, resample=Image.BICUBIC)
-shadow = shadow.rotate(-5, expand=True, resample=Image.BICUBIC)
-nx, ny = 800 * S, 470 * S
-img.paste(shadow, (nx + 10 * S, ny + 14 * S), shadow)
-img.paste(note, (nx, ny), note)
-
-# circle the peak in red
-cx, cy, r = 790, 400, 46
-circ = [(cx + r * math.cos(a) * 1.15, cy + r * math.sin(a)) for a in [i / 20 * 2 * math.pi + 0.3 for i in range(23)]]
-line(circ, fill=RED, w=5, amp=2.5)
-
-out = img.resize((W, H), Image.LANCZOS)
-out.save(sys.argv[1] if len(sys.argv) > 1 else "joke_chart.png")
+img.resize((W, H), Image.LANCZOS).save(sys.argv[1])
